@@ -32,23 +32,25 @@ export default function Portfolio() {
     <div className="portfolio">
       <div className="noise" aria-hidden="true" />
 
-      <nav>
-        <a href="#top" className="brand" onClick={closeMenu}>
-          <BrandMark />
-          HALIAEETUS
-        </a>
-        <button
-          type="button"
-          className={`nav-toggle${menuOpen ? " is-open" : ""}`}
-          aria-expanded={menuOpen}
-          aria-controls="site-nav"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+      <header className="site-header">
+        <nav>
+          <a href="#top" className="brand" onClick={closeMenu}>
+            <BrandMark />
+            HALIAEETUS
+          </a>
+          <button
+            type="button"
+            className={`nav-toggle${menuOpen ? " is-open" : ""}`}
+            aria-expanded={menuOpen}
+            aria-controls="site-nav"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </nav>
         <div
           id="site-nav"
           className={`nav-links${menuOpen ? " is-open" : ""}`}
@@ -59,7 +61,7 @@ export default function Portfolio() {
             </a>
           ))}
         </div>
-      </nav>
+      </header>
       {menuOpen ? (
         <button
           type="button"
