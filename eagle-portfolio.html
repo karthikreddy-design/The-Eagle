@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haliaeetus — The Eagle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black: #05060a;
+    --black-2: #0a0c12;
+    --glass: rgba(255,255,255,0.045);
+    --glass-border: rgba(255,255,255,0.10);
+    --glass-hi: rgba(255,255,255,0.09);
+    --gold: #d9b25f;
+    --gold-bright: #f0cd7c;
+    --ice: #eef1f5;
+    --muted: #8a90a0;
+    --sky: #4f7ea8;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background: var(--black);
+    color: var(--ice);
+    font-family: 'Manrope', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ambient background texture */
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(217,178,95,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 100% 20%, rgba(79,126,168,0.08), transparent 60%),
+      radial-gradient(ellipse 800px 500px at 0% 80%, rgba(217,178,95,0.06), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .noise{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  h1,h2,h3,h4{ font-family:'Cinzel', serif; font-weight:600; letter-spacing:0.02em; }
+
+  .eyebrow{
+    font-family:'Manrope', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.28em;
+    font-size:0.7rem;
+    color:var(--gold);
+    font-weight:600;
+  }
+
+  section{ position:relative; z-index:2; }
+
+  /* ===== NAV ===== */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 22px 6%;
+    background: rgba(5,6,10,0.55);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Cinzel', serif; font-size:1.05rem; letter-spacing:0.12em; color:var(--ice);
+  }
+  .brand svg{ width:26px; height:26px; fill:var(--gold); }
+  .nav-links{ display:flex; gap:34px; font-size:0.82rem; letter-spacing:0.04em; color:var(--muted); }
+  .nav-links a{ transition:color .25s ease; position:relative; }
+  .nav-links a:hover{ color:var(--gold-bright); }
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:100vh;
+    display:flex; align-items:center;
+    padding: 140px 6% 80px;
+    position:relative;
+  }
+  .hero-media{
+    position:absolute; inset:0; z-index:-1; overflow:hidden;
+  }
+  .hero-media img{
+    width:100%; height:100%; object-fit:cover;
+    filter: grayscale(0.15) contrast(1.05) brightness(0.55);
+    transform: scale(1.02);
+  }
+  .hero-media::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(5,6,10,0.55) 0%, rgba(5,6,10,0.35) 35%, rgba(5,6,10,0.92) 92%, var(--black) 100%),
+                linear-gradient(90deg, rgba(5,6,10,0.85) 0%, rgba(5,6,10,0.15) 45%, rgba(5,6,10,0.55) 100%);
+  }
+  .hero-content{ max-width: 720px; }
+  .hero-content .eyebrow{ display:block; margin-bottom:18px; }
+  .hero-content h1{
+    font-size: clamp(3rem, 8vw, 6.2rem);
+    line-height: 0.98;
+    color: var(--ice);
+    text-shadow: 0 4px 40px rgba(0,0,0,0.6);
+  }
+  .hero-content h1 em{
+    font-style:normal; color:var(--gold-bright);
+    background: linear-gradient(120deg, var(--gold-bright), var(--gold) 60%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .hero-sub{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.35rem; font-weight:400; color:#c8cdd8;
+    max-width:540px; margin-top:22px; line-height:1.5;
+    font-style:italic;
+  }
+  .hero-tags{ display:flex; gap:12px; margin-top:34px; flex-wrap:wrap; }
+  .tag{
+    padding:9px 18px; border-radius:999px;
+    background:var(--glass); border:1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    font-size:0.78rem; color:var(--ice); letter-spacing:0.03em;
+  }
+  .tag b{ color:var(--gold-bright); font-weight:700; margin-right:6px; }
+
+  .scroll-cue{
+    position:absolute; bottom:38px; left:6%;
+    display:flex; align-items:center; gap:10px;
+    font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);
+  }
+  .scroll-cue .line{ width:1px; height:34px; background:linear-gradient(var(--gold), transparent); animation:fall 2.2s ease-in-out infinite; }
+  @keyframes fall{ 0%{ opacity:0; transform:translateY(-6px);} 50%{opacity:1;} 100%{opacity:0; transform:translateY(6px);} }
+
+  /* ===== SECTION WRAP ===== */
+  .wrap{ max-width:1180px; margin:0 auto; padding:130px 6%; }
+  .wrap.tight{ padding-top:70px; }
+  .section-head{ margin-bottom:56px; max-width:640px; }
+  .section-head .eyebrow{ margin-bottom:14px; display:block; }
+  .section-head h2{ font-size:clamp(2rem, 4vw, 2.8rem); color:var(--ice); }
+  .section-head p{ font-family:'Cormorant Garamond', serif; font-size:1.15rem; color:var(--muted); margin-top:14px; line-height:1.6; }
+
+  /* ===== GLASS CARD BASE ===== */
+  .glass{
+    background: linear-gradient(155deg, rgba(255,255,255,0.065), rgba(255,255,255,0.02));
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    position:relative;
+    overflow:hidden;
+    transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  }
+  .glass::before{
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  }
+  .glass:hover{
+    transform:translateY(-6px);
+    border-color: rgba(217,178,95,0.35);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(217,178,95,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* ===== OVERVIEW / TAXONOMY STRIP ===== */
+  .tax-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+  .tax-card{ padding:26px 22px; }
+  .tax-card .k{ font-size:0.68rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block;}
+  .tax-card .v{ font-family:'Cormorant Garamond', serif; font-size:1.3rem; color:var(--ice); }
+
+  /* ===== STATS ===== */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .stat-card{ padding:34px 24px; text-align:left; }
+  .stat-card .num{
+    font-family:'Cinzel', serif; font-size:2.4rem; color:var(--gold-bright); line-height:1;
+  }
+  .stat-card .label{ margin-top:10px; font-size:0.85rem; color:var(--muted); }
+
+  /* ===== TWO COL WITH IMAGE ===== */
+  .split{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:60px; align-items:center; }
+  .split.reverse{ direction:rtl; }
+  .split.reverse > *{ direction:ltr; }
+  .split-img{ border-radius:20px; overflow:hidden; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.08); }
+  .split-img img{ width:100%; display:block; height:520px; object-fit:cover; }
+  .split-img .cap{
+    position:absolute; bottom:0; left:0; right:0; padding:18px 22px;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,0.85));
+    font-size:0.78rem; color:#cbd0da; letter-spacing:0.03em;
+  }
+  .split h2{ font-size:2.1rem; margin-bottom:18px; color:var(--ice); }
+  .split p{ color:#b7bcc8; line-height:1.75; font-size:1rem; margin-bottom:16px; }
+  .split p b{ color:var(--gold-bright); font-weight:600; }
+
+  /* ===== FEATURE GRID CARDS (anatomy / senses) ===== */
+  .feature-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .feature-card{ padding:32px 28px; }
+  .feature-card .icon{
+    width:46px; height:46px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(217,178,95,0.12); border:1px solid rgba(217,178,95,0.25);
+    margin-bottom:20px;
+  }
+  .feature-card .icon svg{ width:22px; height:22px; stroke:var(--gold-bright); fill:none; stroke-width:1.6; }
+  .feature-card h3{ font-size:1.15rem; color:var(--ice); margin-bottom:10px; font-family:'Cormorant Garamond',serif; font-weight:600; letter-spacing:0.01em;}
+  .feature-card p{ font-size:0.92rem; color:var(--muted); line-height:1.65; }
+
+  /* ===== SPECIES GALLERY ===== */
+  .species-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .species-card{ overflow:hidden; }
+  .species-card .img-wrap{ height:230px; overflow:hidden; position:relative; }
+  .species-card img{ width:100%; height:100%; object-fit:cover; transition:transform .6s ease; }
+  .species-card:hover img{ transform:scale(1.08); }
+  .species-card .body{ padding:22px 22px 26px; }
+  .species-card .body .region{ font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; display:block;}
+  .species-card h3{ font-family:'Cormorant Garamond', serif; font-size:1.3rem; color:var(--ice); margin-bottom:8px; font-style:italic; font-weight:600;}
+  .species-card p{ font-size:0.88rem; color:var(--muted); line-height:1.6; }
+
+  /* ===== TIMELINE / LIFE CYCLE ===== */
+  .timeline{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; position:relative; }
+  .timeline::before{
+    content:''; position:absolute; top:44px; left:5%; right:5%; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(217,178,95,0.4), rgba(217,178,95,0.4), transparent);
+  }
+  .tl-card{ padding:28px 22px; }
+  .tl-card .stage{
+    width:34px; height:34px; border-radius:50%; margin-bottom:22px;
+    background:var(--black-2); border:1px solid var(--gold); color:var(--gold-bright);
+    display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:0.8rem;
+  }
+  .tl-card h4{ font-size:1rem; color:var(--ice); margin-bottom:8px; font-family:'Manrope'; font-weight:700; letter-spacing:0.02em;}
+  .tl-card p{ font-size:0.85rem; color:var(--muted); line-height:1.6; }
+
+  /* ===== DIET LIST ===== */
+  .diet-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  .diet-row{ padding:22px 26px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .diet-row .name{ font-family:'Cormorant Garamond', serif; font-size:1.15rem; color:var(--ice); }
+  .diet-row .pct-wrap{ flex:1; max-width:160px; height:6px; border-radius:6px; background:rgba(255,255,255,0.08); overflow:hidden; margin-left:20px;}
+  .diet-row .pct{ height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-bright)); }
+  .diet-row .num{ font-family:'Cinzel', serif; color:var(--gold-bright); font-size:0.95rem; min-width:42px; text-align:right;}
+
+  /* ===== CONSERVATION BANNER ===== */
+  .conservation{ padding:60px; text-align:center; position:relative; }
+  .conservation .status-badge{
+    display:inline-block; padding:8px 22px; border-radius:999px; font-size:0.75rem; letter-spacing:0.15em;
+    text-transform:uppercase; background:rgba(120,180,120,0.12); border:1px solid rgba(120,180,120,0.4); color:#9fd39f; margin-bottom:22px;
+  }
+  .conservation h2{ font-size:clamp(1.8rem,3.5vw,2.5rem); color:var(--ice); max-width:760px; margin:0 auto 18px; }
+  .conservation p{ color:var(--muted); max-width:600px; margin:0 auto; font-family:'Cormorant Garamond', serif; font-size:1.1rem; line-height:1.7;}
+
+  /* ===== GALLERY STRIP ===== */
+  .gallery-strip{ display:grid; grid-template-columns: 2fr 1fr 1fr; gap:18px; height:460px; }
+  .gallery-strip .g-item{ border-radius:18px; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,0.08); }
+  .gallery-strip .g-item img{ width:100%; height:100%; object-fit:cover; transition:transform .6s ease; filter:saturate(1.05);}
+  .gallery-strip .g-item:hover img{ transform:scale(1.06); }
+  .gallery-strip .col{ display:grid; grid-template-rows:1fr 1fr; gap:18px; }
+
+  /* ===== QUOTE ===== */
+  .quote-block{ text-align:center; padding:90px 8%; }
+  .quote-block svg{ width:38px; height:38px; fill:var(--gold); margin-bottom:26px;}
+  .quote-block blockquote{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.5rem, 3vw, 2.3rem); color:var(--ice); max-width:820px; margin:0 auto; line-height:1.5;
+  }
+  .quote-block cite{ display:block; margin-top:22px; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-style:normal;}
+
+  /* ===== FOOTER ===== */
+  footer{
+    padding:60px 6% 40px; border-top:1px solid rgba(255,255,255,0.06);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;
+  }
+  footer .brand{ font-size:0.95rem; }
+  footer .fnote{ font-size:0.78rem; color:var(--muted); letter-spacing:0.02em; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 980px){
+    .tax-grid, .stat-grid{ grid-template-columns:repeat(2,1fr); }
+    .split, .split.reverse{ grid-template-columns:1fr; direction:ltr; }
+    .split-img img{ height:360px; }
+    .feature-grid, .species-grid{ grid-template-columns:1fr; }
+    .timeline{ grid-template-columns:1fr; }
+    .timeline::before{ display:none; }
+    .diet-grid{ grid-template-columns:1fr; }
+    .gallery-strip{ grid-template-columns:1fr; height:auto; }
+    .gallery-strip .col{ grid-template-columns:1fr 1fr; grid-template-rows:none; }
+    .gallery-strip .g-item{ height:220px; }
+    .nav-links{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<nav>
+  <div class="brand">
+    <svg viewBox="0 0 24 24"><path d="M12 2c-1 2-3 3-5 3 1 2 1 4 0 6 2-1 4-1 5 1 1-2 3-2 5-1-1-2-1-4 0-6-2 0-4-1-5-3z"/></svg>
+    HALIAEETUS
+  </div>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#anatomy">Anatomy</a>
+    <a href="#species">Species</a>
+    <a href="#lifecycle">Life Cycle</a>
+    <a href="#diet">Diet</a>
+    <a href="#conservation">Conservation</a>
+    <a href="#gallery">Gallery</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-media">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_Eagle_flying_over_water.jpg" alt="Eagle in flight">
+  </div>
+  <div class="hero-content">
+    <span class="eyebrow">Kingdom Animalia · Family Accipitridae</span>
+    <h1>Ruler of the<br><em>Open Sky</em></h1>
+    <p class="hero-sub">A field portfolio on the eagle — the sharpest-eyed, highest-flying, and most fiercely territorial hunter in the bird world.</p>
+    <div class="hero-tags">
+      <div class="tag"><b>60+</b>species worldwide</div>
+      <div class="tag"><b>7,000 ft</b>typical hunting altitude</div>
+      <div class="tag"><b>4-8x</b>sharper eyesight than humans</div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="line"></div>Scroll</div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">01 — Overview</span>
+      <h2>What exactly is an eagle?</h2>
+      <p>Eagles are large birds of prey defined by powerful builds, broad wings, and hooked beaks built for tearing flesh. They occupy the very top of the food chain in nearly every habitat they inhabit — forests, mountains, wetlands, and coastlines alike.</p>
+    </div>
+    <div class="tax-grid">
+      <div class="glass tax-card">
+        <span class="k">Scientific Family</span>
+        <span class="v">Accipitridae</span>
+      </div>
+      <div class="glass tax-card">
+        <span class="k">Lifespan (wild)</span>
+        <span class="v">20 – 30 years</span>
+      </div>
+      <div class="glass tax-card">
+        <span class="k">Wingspan</span>
+        <span class="v">1.8 – 2.3 metres</span>
+      </div>
+      <div class="glass tax-card">
+        <span class="k">Weight</span>
+        <span class="v">3 – 6.5 kilograms</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div class="wrap tight">
+    <div class="stat-grid">
+      <div class="glass stat-card">
+        <div class="num">160 km/h</div>
+        <div class="label">Maximum diving speed during a hunting strike</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="num">3.2 km</div>
+        <div class="label">Distance an eagle can spot a rabbit-sized animal</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="num">10,000+</div>
+        <div class="label">Feathers covering an adult eagle's body</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="num">15 kg</div>
+        <div class="label">Approximate carrying capacity in flight</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANATOMY SPLIT 1 -->
+<section id="anatomy">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <span class="eyebrow">02 — Anatomy</span>
+        <h2>Built like a living weapon</h2>
+        <p>Every part of an eagle's body is refined for aerial dominance. <b>Talons</b> can clamp down with roughly ten times the grip force of a human hand, locking onto prey mid-strike without a second thought.</p>
+        <p>The <b>hooked beak</b> is not used to kill — it's a precision tool for tearing meat, feathers, and hide once prey has already been subdued by the feet.</p>
+        <p>Beneath the plumage, a <b>keel-shaped breastbone</b> anchors flight muscles that make up nearly a third of total body weight, giving eagles the power to carry prey heavier than themselves.</p>
+      </div>
+      <div class="split-img">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_Eagle_Portrait.jpg" alt="Close up of an eagle's head and beak">
+        <div class="cap">The hooked beak and piercing stare — built for precision, not force</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANATOMY SPLIT 2 (reverse) -->
+<section>
+  <div class="wrap tight">
+    <div class="split reverse">
+      <div>
+        <span class="eyebrow">03 — The Eye</span>
+        <h2>Vision sharper than any lens</h2>
+        <p>An eagle's eye is nearly the same size as a human's, yet it delivers <b>four to eight times</b> the visual acuity. A dense concentration of light-sensitive cells and a deep central fovea let it resolve fine detail across immense distances.</p>
+        <p>A <b>nictitating membrane</b> — a translucent third eyelid — sweeps across the eye to clear debris mid-flight without ever losing sight of the target below.</p>
+      </div>
+      <div class="split-img">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_eagle_in_a_nosedive.jpg" alt="Eagle diving with sharp focus">
+        <div class="cap">Locked on target during a hunting descent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE GRID: SENSES / TRAITS -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">04 — Signature Traits</span>
+      <h2>Five things that define an eagle</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>Telescopic Eyesight</h3>
+        <p>Can spot a moving hare from over three kilometres away while circling on a thermal current.</p>
+      </div>
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 16l6-10 6 6 4-8"/></svg></div>
+        <h3>Broad Soaring Wings</h3>
+        <p>Long, deeply fingered flight feathers reduce drag, letting eagles glide for hours on rising air with barely a wingbeat.</p>
+      </div>
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/></svg></div>
+        <h3>Vice-Grip Talons</h3>
+        <p>Four curved talons per foot lock into a fixed grip strong enough to crush bone on impact.</p>
+      </div>
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.65-9 9-9 9z"/></svg></div>
+        <h3>Lifelong Pair Bonds</h3>
+        <p>Most species mate for life, returning to the same nesting territory year after year.</p>
+      </div>
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 21l6-6M3 21v-6h6M21 3l-6 6M21 3h-6v6"/></svg></div>
+        <h3>Fortress Nests</h3>
+        <p>Eyries built from branches are reused and expanded annually, some growing to over a tonne in weight.</p>
+      </div>
+      <div class="glass feature-card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <h3>Explosive Dives</h3>
+        <p>Species like the golden eagle exceed 240 km/h in a full hunting dive — among the fastest animals alive.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECIES -->
+<section id="species">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">05 — Species Spotlight</span>
+      <h2>Three eagles, three continents</h2>
+      <p>Of the roughly 60 recognised species, these three are the most iconic representatives of the family — each shaped by a very different home range.</p>
+    </div>
+    <div class="species-grid">
+      <div class="glass species-card">
+        <div class="img-wrap"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/American_Bald_Eagle.jpg" alt="Bald Eagle"></div>
+        <div class="body">
+          <span class="region">North America</span>
+          <h3>Bald Eagle</h3>
+          <p>Haliaeetus leucocephalus. A fish-hunting specialist and the national bird of the United States, recognised instantly by its white head and tail.</p>
+        </div>
+      </div>
+      <div class="glass species-card">
+        <div class="img-wrap"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_eagle_in_Alaska_2016-3.jpg" alt="Eagle over water in Alaska"></div>
+        <div class="body">
+          <span class="region">Coastal Alaska</span>
+          <h3>Sea Eagle</h3>
+          <p>Haliaeetus species thrive along coastlines and river deltas, snatching salmon straight from the water's surface in a low, fast pass.</p>
+        </div>
+      </div>
+      <div class="glass species-card">
+        <div class="img-wrap"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_Eagle_(Haliaeetus_leucocephalus)_in_Kachemak_Bay,_Alaska.jpg" alt="Eagle perched near bay"></div>
+        <div class="body">
+          <span class="region">Northern Wetlands</span>
+          <h3>Golden Eagle Kin</h3>
+          <p>Found across Eurasia and North America's mountains, this highland hunter takes prey as large as young deer in open, treeless terrain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIFECYCLE -->
+<section id="lifecycle">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">06 — Life Cycle</span>
+      <h2>From hatchling to apex hunter</h2>
+    </div>
+    <div class="timeline">
+      <div class="glass tl-card">
+        <div class="stage">I</div>
+        <h4>Egg & Incubation</h4>
+        <p>1–3 eggs laid per clutch, incubated for roughly 35 days by both parents in shifts.</p>
+      </div>
+      <div class="glass tl-card">
+        <div class="stage">II</div>
+        <h4>Nestling</h4>
+        <p>Chicks are fed torn scraps of meat by parents and grow flight feathers over 10–12 weeks.</p>
+      </div>
+      <div class="glass tl-card">
+        <div class="stage">III</div>
+        <h4>Fledgling</h4>
+        <p>First flights are clumsy and short-range; young eagles practise landings for several weeks nearby.</p>
+      </div>
+      <div class="glass tl-card">
+        <div class="stage">IV</div>
+        <h4>Maturity</h4>
+        <p>Full adult plumage and breeding readiness typically arrive between four and six years of age.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIET -->
+<section id="diet">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">07 — Diet & Hunting</span>
+      <h2>An opportunistic apex hunter</h2>
+      <p>Diet varies heavily by species and season, but most eagles favour live prey over carrion when it's available.</p>
+    </div>
+    <div class="diet-grid">
+      <div class="glass diet-row">
+        <span class="name">Fish</span>
+        <div class="pct-wrap"><div class="pct" style="width:70%"></div></div>
+        <span class="num">70%</span>
+      </div>
+      <div class="glass diet-row">
+        <span class="name">Small Mammals</span>
+        <div class="pct-wrap"><div class="pct" style="width:55%"></div></div>
+        <span class="num">55%</span>
+      </div>
+      <div class="glass diet-row">
+        <span class="name">Waterfowl & Birds</span>
+        <div class="pct-wrap"><div class="pct" style="width:40%"></div></div>
+        <span class="num">40%</span>
+      </div>
+      <div class="glass diet-row">
+        <span class="name">Carrion (scavenged)</span>
+        <div class="pct-wrap"><div class="pct" style="width:25%"></div></div>
+        <span class="num">25%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section>
+  <div class="wrap tight quote-block">
+    <svg viewBox="0 0 24 24"><path d="M7 17h3l2-4V7H6v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z"/></svg>
+    <blockquote>"The eagle does not fly with the flock — it is always alone in the vastness of its own domain, watching from a height nothing else dares to reach."</blockquote>
+    <cite>Field Notes on Raptor Behaviour</cite>
+  </div>
+</section>
+
+<!-- CONSERVATION -->
+<section id="conservation">
+  <div class="wrap tight">
+    <div class="glass conservation">
+      <span class="status-badge">● Recovering — Least Concern (most species)</span>
+      <h2>Once endangered, now a conservation success story</h2>
+      <p>Pesticide contamination and habitat loss pushed several eagle species to the brink in the 20th century. Legal protection, breeding programmes, and banning harmful pesticides brought many populations, including the bald eagle, back from near-extinction over the following decades.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">08 — Gallery</span>
+      <h2>In the field</h2>
+    </div>
+    <div class="gallery-strip">
+      <div class="g-item"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_Eagle_flying_over_water.jpg" alt="Eagle flying over water"></div>
+      <div class="col">
+        <div class="g-item"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_eagle.jpg" alt="Eagle portrait"></div>
+        <div class="g-item"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_eagle_FWS.jpg" alt="Eagle perched"></div>
+      </div>
+      <div class="col">
+        <div class="g-item"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_Eagle_Portrait.jpg" alt="Eagle close up"></div>
+        <div class="g-item"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bald_eagle_in_a_nosedive.jpg" alt="Eagle diving"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="brand">
+    <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#d9b25f;"><path d="M12 2c-1 2-3 3-5 3 1 2 1 4 0 6 2-1 4-1 5 1 1-2 3-2 5-1-1-2-1-4 0-6-2 0-4-1-5-3z"/></svg>
+    HALIAEETUS
+  </div>
+  <div class="fnote">A field portfolio on the eagle · Images courtesy of Wikimedia Commons contributors</div>
+</footer>
+
+</body>
+</html>
